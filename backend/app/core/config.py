@@ -23,8 +23,9 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./ai_trading.db"
     
-    # CORS
+    # CORS - Allow public network access
     BACKEND_CORS_ORIGINS: List[str] = [
+        "*",
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
