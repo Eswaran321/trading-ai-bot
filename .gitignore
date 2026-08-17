@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# Build outputs
+dist/
+build/
+
+# Databases & local state
+*.db
+*.sqlite
+*.log
+.env
+.venv/
+env/
