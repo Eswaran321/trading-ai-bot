@@ -6,13 +6,17 @@ import {
   OpportunitySignal, 
   PortfolioSummary, 
   Order, 
-  SystemHealth 
+  SystemHealth,
+  User
 } from '../types';
 import { api } from '../services/api';
 
 interface TradingState {
   activeTab: 'dashboard' | 'scanner' | 'builder' | 'backtest' | 'portfolio' | 'health';
   selectedSymbol: string;
+  currentUser: User | null;
+  token: string | null;
+  isLoginModalOpen: boolean;
   chartBars: OHLCVBar[];
   marketItems: MarketItem[];
   aiSummary: AIMarketSummary | null;
@@ -27,6 +31,10 @@ interface TradingState {
 
   setActiveTab: (tab: TradingState['activeTab']) => void;
   setSelectedSymbol: (symbol: string) => void;
+  setLoginModalOpen: (open: boolean) => void;
+  loginUser: (email: string, password: string) => Promise<void>;
+  logoutUser: () => void;
+  initAuth: () => Promise<void>;
   toggleAssistant: () => void;
   fetchMarketData: () => Promise<void>;
   fetchChartData: (symbol: string) => Promise<void>;
@@ -41,6 +49,9 @@ interface TradingState {
 export const useTradingStore = create<TradingState>((set, get) => ({
   activeTab: 'dashboard',
   selectedSymbol: 'RELIANCE.NS',
+  currentUser: null,
+  token: localStorage.getItem('quantai_jwt_token'),
+  isLoginModalOpen: false,
   chartBars: [],
   marketItems: [],
   aiSummary: null,
@@ -64,6 +75,45 @@ export const useTradingStore = create<TradingState>((set, get) => ({
   setSelectedSymbol: async (symbol) => {
     set({ selectedSymbol: symbol });
     await get().fetchChartData(symbol);
+  },
+
+  setLoginModalOpen: (open) => set({ isLoginModalOpen: open }),
+
+  loginUser: async (email, password) => {
+    try {
+      const res = await api.login(email, password);
+      localStorage.setItem('quantai_jwt_token', res.access_token);
+      set({ currentUser: res.user, token: res.access_token, isLoginModalOpen: false });
+    } catch (err: any) {
+      throw new Error(err.response?.data?.detail || 'Authentication failed');
+    }
+  },
+
+  logoutUser: () => {
+    localStorage.removeItem('quantai_jwt_token');
+    set({ currentUser: null, token: null });
+  },
+
+  initAuth: async () => {
+    const savedToken = localStorage.getItem('quantai_jwt_token');
+    if (savedToken) {
+      try {
+        const user = await api.getMe(savedToken);
+        set({ currentUser: user, token: savedToken });
+      } catch (err) {
+        localStorage.removeItem('quantai_jwt_token');
+        set({ currentUser: null, token: null });
+      }
+    } else {
+      // Auto-log in default Valued User session for immediate access
+      try {
+        const res = await api.login('valued.user@quantai.com', 'password123');
+        localStorage.setItem('quantai_jwt_token', res.access_token);
+        set({ currentUser: res.user, token: res.access_token });
+      } catch (e) {
+        // Ignore fallback
+      }
+    }
   },
 
   toggleAssistant: () => set((state) => ({ isAssistantOpen: !state.isAssistantOpen })),

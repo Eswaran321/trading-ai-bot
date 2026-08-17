@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Header } from './components/Header';
 import { AIAssistantDrawer } from './components/AIAssistantDrawer';
+import { LoginModal } from './components/LoginModal';
 import { useTradingStore } from './stores/useTradingStore';
 
 import { DashboardPage } from './pages/DashboardPage';
@@ -14,6 +15,7 @@ export const App: React.FC = () => {
   const { 
     activeTab, 
     selectedSymbol, 
+    initAuth,
     fetchMarketData, 
     fetchChartData, 
     fetchPortfolio, 
@@ -22,7 +24,8 @@ export const App: React.FC = () => {
   } = useTradingStore();
 
   useEffect(() => {
-    // Initial data load
+    // Initial user auth & data load
+    initAuth();
     fetchMarketData();
     fetchChartData(selectedSymbol);
     fetchPortfolio();
@@ -57,6 +60,9 @@ export const App: React.FC = () => {
 
       {/* Sliding AI Research Assistant Drawer */}
       <AIAssistantDrawer />
+
+      {/* Valued User Login Session Modal */}
+      <LoginModal />
 
     </div>
   );

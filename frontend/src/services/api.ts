@@ -11,7 +11,32 @@ import {
 
 const API_BASE = '/api/v1';
 
+// Attach JWT Bearer token to all outgoing requests automatically
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('quantai_jwt_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const api = {
+  // Auth & Session
+  login: async (email: string, password: string) => {
+    const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
+    return res.data;
+  },
+
+  register: async (email: string, password: string, full_name: string) => {
+    const res = await axios.post(`${API_BASE}/auth/register`, { email, password, full_name });
+    return res.data;
+  },
+
+  getMe: async (token: string) => {
+    const res = await axios.get(`${API_BASE}/auth/me`, { params: { token } });
+    return res.data;
+  },
+
   // System Health
   getHealth: async (): Promise<SystemHealth> => {
     const res = await axios.get(`${API_BASE}/system/health`);

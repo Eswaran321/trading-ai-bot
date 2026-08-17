@@ -7,10 +7,10 @@ import {
   ShieldAlert, 
   Activity, 
   Bot, 
-  Shield, 
   AlertTriangle,
-  Play,
-  Pause
+  UserCheck,
+  LogOut,
+  LogIn
 } from 'lucide-react';
 import { useTradingStore } from '../stores/useTradingStore';
 
@@ -21,7 +21,10 @@ export const Header: React.FC = () => {
     portfolio, 
     toggleKillSwitch, 
     toggleAssistant,
-    isAssistantOpen 
+    isAssistantOpen,
+    currentUser,
+    setLoginModalOpen,
+    logoutUser
   } = useTradingStore();
 
   const isKillSwitchActive = portfolio?.risk_profile.emergency_kill_switch ?? false;
@@ -125,6 +128,34 @@ export const Header: React.FC = () => {
         {/* Right Status & Controls */}
         <div className="flex items-center gap-3">
           
+          {/* User Session Badge */}
+          {currentUser ? (
+            <div className="flex items-center gap-2 bg-slate-950 p-1 pr-2.5 rounded-xl border border-slate-800">
+              <div className="w-6 h-6 rounded-lg bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 flex items-center justify-center font-mono font-bold text-xs">
+                {currentUser.full_name.charAt(0)}
+              </div>
+              <div className="text-left hidden sm:block">
+                <span className="font-bold text-xs text-slate-200 block truncate max-w-[120px]">{currentUser.full_name}</span>
+                <span className="text-[9px] font-mono text-emerald-400 block uppercase font-semibold">VALUED PRO SESSION</span>
+              </div>
+              <button
+                onClick={logoutUser}
+                className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-slate-900 transition ml-1"
+                title="End Authenticated Session"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setLoginModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold font-mono bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 transition shadow-lg shadow-indigo-600/20"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              SIGN IN
+            </button>
+          )}
+
           {/* Mode Pill */}
           <div className={`px-2.5 py-1 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 border ${
             isLive 

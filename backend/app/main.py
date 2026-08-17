@@ -9,6 +9,7 @@ from app.api.v1.market import router as market_router
 from app.api.v1.scanner import router as scanner_router
 from app.api.v1.portfolio import router as portfolio_router
 from app.api.v1.assistant import router as assistant_router
+from app.api.v1.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +33,7 @@ app.add_middleware(
 )
 
 # Mount Router v1
+app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["Auth & User Session"])
 app.include_router(health_router, prefix=f"{settings.API_V1_STR}/system", tags=["System"])
 app.include_router(market_router, prefix=f"{settings.API_V1_STR}/market", tags=["Market Data"])
 app.include_router(scanner_router, prefix=f"{settings.API_V1_STR}/scanner", tags=["AI Scanner"])
