@@ -112,9 +112,9 @@ function formatData(){
   var lines=[
     E("greeting").textContent,
     "",
-    "Patient Name     : "+E("name").value,
+    "Patient Name     : *"+(E("name").value||"—")+"*",
     "Date             : "+(E("date").value||"—"),
-    "Temperature      : "+(temp?temp+" °F":""),
+    "Temperature      : *"+(temp?temp+" °F":"—")+"*",
     "Pulse Rate       : "+(pulse?pulse+" beats/min":""),
     "Respiratory Rate : "+(rr?rr+" breaths/min":""),
     "BP               : "+(bp?bp+" mmHg":""),
@@ -122,12 +122,12 @@ function formatData(){
     "SpO₂             : "+(spo2?spo2+" %":""),
     "IV Fluid Intake  : "+(ivf?ivf+" mL":""),
     "Oral Intake      : "+(oral?oral+" mL":""),
-    "Total Intake     : "+(totalin?totalin+" mL":""),
+    "Total Intake     : *"+(totalin?totalin+" mL":"—")+"*",
     "Urine+Motion Output : "+(urine?urine+" mL":""),
     "Motion           : "+(motion?motion+" episodes":""),
     "Vomiting         : "+(vomiting?vomiting+" episodes":""),
-    "Total Output     : "+(totalout?totalout+" mL":""),
-    "Fluid Balance    : "+(balance?balance+" mL":"")
+    "Total Output     : *"+(totalout?totalout+" mL":"—")+"*",
+    "Fluid Balance    : *"+(balance?balance+" mL":"—")+"*"
   ];
 
   return lines.join("\n");
